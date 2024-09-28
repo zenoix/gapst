@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package model;
+
+service Model {
+    rpc Predict (PredictRequest) returns (PredictResponse);
+};
+
+message PredictRequest {
+    float SepalLengthCm = 1;
+    float SepalWidthCm = 2;
+    float PetalLengthCm = 3;
+    float PetalWidthCm = 4;
+};
+
+
+message PredictResponse {
+    string Species = 1;
+};
