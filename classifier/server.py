@@ -5,7 +5,7 @@ import grpc
 import pandas as pd
 
 from model import PredictiveModel
-from protocol_buffer import model_pb2, model_pb2_grpc
+from proto import model_pb2, model_pb2_grpc
 
 PORT = 50051
 

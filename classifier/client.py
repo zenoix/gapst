@@ -1,6 +1,6 @@
 import grpc
 
-from protocol_buffer import model_pb2, model_pb2_grpc
+from proto import model_pb2, model_pb2_grpc
 
 
 def run(
