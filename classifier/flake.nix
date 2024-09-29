@@ -18,6 +18,8 @@
       devShells."x86_64-linux".default = pkgs.mkShell {
 
         packages = [
+          pkgs.gnumake
+          pkgs.gnused
           (pkgs.python3.withPackages (
             python-pkgs: with python-pkgs; [
               grpcio
