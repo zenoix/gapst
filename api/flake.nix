@@ -20,6 +20,9 @@
         packages = with pkgs; [
           go
           golangci-lint
+          protobuf
+          protoc-gen-go
+          protoc-gen-go-grpc
         ];
 
       };

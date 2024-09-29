@@ -1,10 +1,18 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/zenoix/gapst/pb"
 )
 
 type predictionRequest struct {
@@ -15,7 +23,27 @@ type predictionRequest struct {
 }
 
 func main() {
+	serverAddr := flag.String(
+		"server", "localhost:50051",
+		"The server address in the format of host:port",
+	)
+	flag.Parse()
+
 	mux := http.NewServeMux()
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	conn, err := grpc.NewClient(*serverAddr, opts...)
+	if err != nil {
+		log.Fatalln("Failed to dial:", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewModelClient(conn)
+
+	log.Println("gRPC connection made successfully")
 
 	log.Println("Go API server has started")
 
@@ -44,7 +72,23 @@ func main() {
 			return
 		}
 
-		log.Println(p)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		res, err := client.Predict(ctx, &pb.PredictRequest{
+
+			SepalLengthCm: p.SepalLengthCm,
+			SepalWidthCm:  p.SepalWidthCm,
+			PetalLengthCm: p.PetalLengthCm,
+			PetalWidthCm:  p.PetalWidthCm,
+		})
+		if err != nil {
+			log.Println("Error sending request:", err)
+			http.Error(w, "error sending request", http.StatusInternalServerError)
+		}
+
+		log.Println(res.Species)
+		fmt.Fprintf(w, res.Species)
 	})
 
 	if err := http.ListenAndServe("localhost:8080", mux); err != nil {
