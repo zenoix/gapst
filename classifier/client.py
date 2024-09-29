@@ -1,6 +1,6 @@
 import grpc
 
-from proto import model_pb2, model_pb2_grpc
+from pb import model_pb2, model_pb2_grpc
 
 
 def run(
